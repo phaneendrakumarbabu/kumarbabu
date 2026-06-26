@@ -245,6 +245,14 @@
       width: 100%;
     }
 
+    .nav-link.active {
+      color: var(--green);
+    }
+
+    .nav-link.active::after {
+      width: 100%;
+    }
+
     /* ── Hamburger button (mobile only) ── */
     .nav-hamburger {
       display: none;
@@ -467,7 +475,7 @@
       margin-bottom: 20px;
       font-weight: 400;
       opacity: 0;
-      animation: fade-up 0.8s 3s forwards;
+      animation: fade-up 0.8s 1.6s forwards;
     }
 
     .hero-name {
@@ -505,7 +513,7 @@
       gap: 8px;
       margin-bottom: 48px;
       opacity: 0;
-      animation: fade-up 0.8s 3.2s forwards;
+      animation: fade-up 0.8s 1.8s forwards;
     }
 
     .hero-role {
@@ -527,7 +535,7 @@
       flex-wrap: wrap;
       margin-bottom: 48px;
       opacity: 0;
-      animation: fade-up 0.8s 3.4s forwards;
+      animation: fade-up 0.8s 2.0s forwards;
     }
 
     .hero-cta-primary {
@@ -578,7 +586,7 @@
       display: flex;
       gap: 32px;
       opacity: 0;
-      animation: fade-up 0.8s 3.6s forwards;
+      animation: fade-up 0.8s 2.2s forwards;
     }
 
     .hero-socials a {
@@ -616,7 +624,7 @@
       aspect-ratio: 1 / 1;
       flex-shrink: 0;
       opacity: 0;
-      animation: fade-up 1s 3.2s forwards;
+      animation: fade-up 1s 1.8s forwards;
     }
 
     /* Soft green ambient glow layer */
@@ -1973,6 +1981,110 @@
         gap: 0;
       }
     }
+
+    /* ─── SCROLL PROGRESS BAR ─────────────────────────── */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green), #00e1ff);
+      z-index: 10001;
+      transition: width 0.05s linear;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    /* ─── BACK TO TOP ─────────────────────────────────── */
+    #back-to-top {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      width: 48px;
+      height: 48px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--off-white);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: opacity 0.4s, visibility 0.4s, transform 0.4s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    #back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    #back-to-top:hover {
+      border-color: var(--green);
+      background: rgba(0, 255, 136, 0.08);
+      color: var(--green);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+      transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+      #back-to-top {
+        bottom: 24px;
+        right: 24px;
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+      }
+    }
+
+    /* ─── STAT COUNTER ANIMATION ──────────────────────── */
+    .stat-num {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── PREFERS REDUCED MOTION ──────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      html { scroll-behavior: auto; }
+
+      .marquee-inner { animation: none !important; }
+
+      .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .skill-pill {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      #loader { display: none !important; }
+
+      .hero-greeting, .hero-roles, .hero-ctas, .hero-socials, .hero-img-wrap {
+        opacity: 1 !important;
+        animation: none !important;
+      }
+
+      .hero-name .char {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -1981,6 +2093,12 @@
   <!-- Custom Cursor -->
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
+
+  <!-- Scroll Progress Bar -->
+  <div id="scroll-progress"></div>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" aria-label="Back to top">↑</button>
 
   <!-- ════ LOADER ════ -->
   <div id="loader">
@@ -1994,9 +2112,10 @@
   <nav>
     <a href="#" class="nav-logo">KB</a>
     <div class="nav-links">
-      <a href="#about" class="nav-link">About</a>
-      <a href="#projects" class="nav-link">Projects</a>
-      <a href="#contact" class="nav-link">Contact</a>
+      <a href="#about" class="nav-link" data-section="about">About</a>
+      <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+      <a href="#manifesto" class="nav-link" data-section="manifesto">Manifesto</a>
+      <a href="#contact" class="nav-link" data-section="contact">Contact</a>
     </div>
     <div class="nav-right">
       <span>Developer</span>
@@ -2085,7 +2204,7 @@
 
     <div class="hero-left">
       <p class="hero-greeting">👋 Hi, my name is</p>
-      <span class="hero-name" id="hero-name"></span>
+      <h1 class="hero-name" id="hero-name"></h1>
       <div class="hero-roles">
         <div class="hero-role"><span>01</span> — Cybersecurity</div>
         <div class="hero-role"><span>02</span> — Student &amp; Developer</div>
@@ -2103,8 +2222,8 @@
     <div class="hero-right">
       <div class="hero-img-wrap" id="hero-img-wrap">
         <div class="hero-img-frame">
-          <img class="hero-img-ghost" src="profile.png" alt="" aria-hidden="true" />
-          <img class="hero-img-main" src="profile.png" alt="Kumar Babu" />
+          <img class="hero-img-ghost" src="profile.webp" alt="" aria-hidden="true" />
+          <img class="hero-img-main" src="profile.webp" alt="Kumar Babu" />
           <div class="hero-img-badge">
             <span class="badge-dot"></span>
             Available for Work
@@ -2132,7 +2251,7 @@
       <div class="reveal">
         <div class="section-label">Philosophy</div>
         <h2 class="apart-heading">What Sets<br />Me Apart</h2>
-        <p class="apart-sub">Move the mouse</p>
+        <p class="apart-sub">Security meets innovation</p>
       </div>
       <div class="reveal reveal-delay-2">
         <p class="apart-body">
@@ -2145,15 +2264,15 @@
 
     <div class="stats-row reveal">
       <div class="stat-block">
-        <div class="stat-num">08<span>+</span></div>
+        <div class="stat-num" data-target="11" data-suffix="+">0<span>+</span></div>
         <div class="stat-label">Projects Built</div>
       </div>
       <div class="stat-block">
-        <div class="stat-num">2<span>+</span></div>
+        <div class="stat-num" data-target="2" data-suffix="+">0<span>+</span></div>
         <div class="stat-label">Years Learning</div>
       </div>
       <div class="stat-block">
-        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-num" data-target="100" data-suffix="%">0<span>%</span></div>
         <div class="stat-label">Security-First</div>
       </div>
     </div>
@@ -2291,16 +2410,12 @@
         <span class="contact-card-val">Usually within 24 hours</span>
       </div>
     </div>
-
-    <div class="footer-line reveal">
-      &copy; <span id="copy-year"></span> Goru Naga Phaneendra Kumar Babu. All rights reserved.
-    </div>
   </section>
 
   <!-- Footer -->
   <footer
     style="padding: 40px 48px; text-align: center; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;">
-    &copy; <span id="copy-year"></span> Goru Naga Phaneendra Kumar babu. All rights reserved.
+    &copy; <span id="copy-year"></span> Goru Naga Phaneendra Kumar Babu. All rights reserved.
   </footer>
 
   <script>
@@ -2441,18 +2556,60 @@
     (function () {
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
-      }, 2800);
+      }, 1500);
     })();
 
     // ── DYNAMIC YEAR ─────────────────────────────────────
     document.getElementById('copy-year').textContent = new Date().getFullYear();
 
-    // ── NAV SCROLL GLASS ─────────────────────────────────
+    // ── NAV SCROLL GLASS + ACTIVE INDICATOR + PROGRESS BAR + BACK-TO-TOP ─────
     (function () {
       const nav = document.querySelector('nav');
-      window.addEventListener('scroll', () => {
-        nav.classList.toggle('scrolled', window.scrollY > 60);
-      }, { passive: true });
+      const navLinks = document.querySelectorAll('.nav-link[data-section]');
+      const sections = document.querySelectorAll('section[id]');
+      const progressBar = document.getElementById('scroll-progress');
+      const backToTop = document.getElementById('back-to-top');
+
+      function onScroll() {
+        const scrollY = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+        // Nav glass effect
+        nav.classList.toggle('scrolled', scrollY > 60);
+
+        // Scroll progress bar
+        if (progressBar && docHeight > 0) {
+          const progress = (scrollY / docHeight) * 100;
+          progressBar.style.width = progress + '%';
+        }
+
+        // Back to top visibility
+        if (backToTop) {
+          backToTop.classList.toggle('visible', scrollY > 400);
+        }
+
+        // Active nav indicator
+        let currentSection = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 200;
+          if (scrollY >= top) {
+            currentSection = section.getAttribute('id');
+          }
+        });
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.dataset.section === currentSection);
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll(); // Run once on load
+
+      // Back to top click
+      if (backToTop) {
+        backToTop.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
     })();
 
     // ── HERO NAME SPLIT ─────────────────────────────────
@@ -2468,7 +2625,7 @@
           const s = document.createElement('span');
           s.className = 'char';
           s.textContent = ch;
-          s.style.animationDelay = (2.8 + i * 0.055) + 's';
+          s.style.animationDelay = (1.3 + i * 0.055) + 's';
           el.appendChild(s);
         }
       });
@@ -2518,17 +2675,17 @@
 
     // ── PROJECTS ──────────────────────────────────────────
     const projects = [
-      { num: '01', name: 'Phishing Defence Extension', desc: 'A Chrome browser extension that protects users from phishing websites and malicious links in real-time. Leverages heuristic and pattern-based detection to warn users before they interact with dangerous URLs.', tags: ['Chrome Extension', 'TypeScript', 'JavaScript', 'Security'], link: 'https://github.com/phaneendrakumarbabu/phishing-defence-extension', github: 'https://github.com/phaneendrakumarbabu/phishing-defence-extension', img: 'proj_01.png' },
-      { num: '02', name: 'RepairGenie', desc: 'A civic issue reporting and tracking web app. Citizens report infrastructure problems with photos; admins manage and track issue status across a clean dashboard with real-time updates.', tags: ['Flask', 'Python', 'SQLite', 'Tailwind CSS'], link: 'https://github.com/phaneendrakumarbabu/repairgenie-', github: 'https://github.com/phaneendrakumarbabu/repairgenie-', img: 'proj_02.png' },
-      { num: '03', name: 'Phishing Awareness Training Platform', desc: 'An interactive cybersecurity training platform with hands-on simulations, training modules, and AI-powered scenario generation via Google Gemini API.', tags: ['React', 'Tailwind CSS', 'Google Gemini API', 'Cybersecurity'], link: 'https://github.com/phaneendrakumarbabu/phishing-awareness-', github: 'https://github.com/phaneendrakumarbabu/phishing-awareness-', img: 'proj_03.png' },
-      { num: '04', name: 'Phishing Awareness Defence Portal', desc: 'A comprehensive web app for identifying, reporting, and learning about phishing attacks. Features real-time URL analysis with VirusTotal API, password strength checking, quizzes, and a full admin dashboard.', tags: ['Flask', 'Python', 'VirusTotal API', 'SQLite'], link: 'https://github.com/phaneendrakumarbabu/phishing-awareness-defence-landing-page-', github: 'https://github.com/phaneendrakumarbabu/phishing-awareness-defence-landing-page-', img: 'proj_04.png' },
-      { num: '05', name: 'Caesar Cipher Encryption Tool', desc: 'A Python program implementing the classical Caesar Cipher algorithm — shifts letters by a fixed number of positions to encrypt and decrypt messages with a clean CLI.', tags: ['Python', 'Cryptography', 'Caesar Cipher', 'Encryption'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_05.png' },
-      { num: '06', name: 'Image Encryption Tool', desc: 'A GUI application for encrypting and decrypting images using pixel manipulation — XOR operations and pixel swapping — with an intuitive Tkinter interface.', tags: ['Python', 'OpenCV', 'Tkinter', 'Image Encryption'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_06.png' },
-      { num: '07', name: 'Password Complexity Checker', desc: 'A Python tool that assesses password strength by evaluating length, character types, special characters, and numbers, with a real-time web interface for instant feedback.', tags: ['Python', 'JavaScript', 'Password Security', 'Web Interface'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_07.png' },
-      { num: '08', name: 'Network Packet Analyzer', desc: 'A Python network analysis tool for capturing, analyzing, and inspecting packets — enabling traffic monitoring, protocol analysis, and threat detection in real-time.', tags: ['Python', 'Network Analysis', 'Packet Capture', 'Cybersecurity'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_08.png' },
-      { num: '09', name: 'WanderWise AI', desc: 'An AI-powered travel planning platform that generates personalized itineraries, discovers hidden gems, and creates smart travel recommendations. Built with TypeScript and deployed on Vercel, it combines real-time data with Gemini AI to craft immersive, day-by-day travel plans tailored to your preferences, budget, and travel style.', tags: ['TypeScript', 'React', 'Google Gemini AI', 'Vercel', 'CSS'], link: 'https://wanderwise-ai-main.vercel.app', github: 'https://github.com/phaneendrakumarbabu/wanderwise-ai-main', img: 'proj_09.png' },
-      { num: '10', name: 'AI Resume Analyser', desc: 'ResumeAI Pro — an AI-powered resume analyzer that helps job seekers match their skills to job requirements. Upload your PDF or paste your resume text, select a target role (Web Dev, Data Analyst, DevOps, Cloud Engineer, and more), and get an ATS score, skill match percentage, and personalized improvement suggestions powered by Google Gemini. Features an optional XGBoost ML service for enhanced scoring accuracy.', tags: ['React 18', 'TypeScript', 'Google Gemini AI', 'XGBoost', 'Vite', 'PDF.js', 'Firebase'], link: 'https://github.com/phaneendrakumarbabu/ai-resume-analyser', github: 'https://github.com/phaneendrakumarbabu/ai-resume-analyser', img: 'proj_10.png' },
-      { num: '11', name: 'Learning Content Generator', desc: 'A modern full-stack learning platform designed to help developers and tech enthusiasts explore technology domains and discover career paths. Features an AI-powered Resource Summarizer, Project Idea Generator, Personalized Roadmap Creator, Tech News Bot, and Concept Explainer — all powered by Google Gemini AI via Firebase Genkit. Built with Next.js 15, Firebase Auth (Google OAuth + passwordless email), and Prisma ORM.', tags: ['Next.js 15', 'TypeScript', 'Google Gemini AI', 'Firebase', 'Prisma', 'Tailwind CSS', 'Radix UI'], link: 'https://github.com/phaneendrakumarbabu/learning-content-generator', github: 'https://github.com/phaneendrakumarbabu/learning-content-generator', img: 'proj_11.png' },
+      { num: '01', name: 'Phishing Defence Extension', desc: 'A Chrome browser extension that protects users from phishing websites and malicious links in real-time. Leverages heuristic and pattern-based detection to warn users before they interact with dangerous URLs.', tags: ['Chrome Extension', 'TypeScript', 'JavaScript', 'Security'], link: 'https://github.com/phaneendrakumarbabu/phishing-defence-extension', github: 'https://github.com/phaneendrakumarbabu/phishing-defence-extension', img: 'proj_01.webp' },
+      { num: '02', name: 'RepairGenie', desc: 'A civic issue reporting and tracking web app. Citizens report infrastructure problems with photos; admins manage and track issue status across a clean dashboard with real-time updates.', tags: ['Flask', 'Python', 'SQLite', 'Tailwind CSS'], link: 'https://github.com/phaneendrakumarbabu/repairgenie-', github: 'https://github.com/phaneendrakumarbabu/repairgenie-', img: 'proj_02.webp' },
+      { num: '03', name: 'Phishing Awareness Training Platform', desc: 'An interactive cybersecurity training platform with hands-on simulations, training modules, and AI-powered scenario generation via Google Gemini API.', tags: ['React', 'Tailwind CSS', 'Google Gemini API', 'Cybersecurity'], link: 'https://github.com/phaneendrakumarbabu/phishing-awareness-', github: 'https://github.com/phaneendrakumarbabu/phishing-awareness-', img: 'proj_03.webp' },
+      { num: '04', name: 'Phishing Awareness Defence Portal', desc: 'A comprehensive web app for identifying, reporting, and learning about phishing attacks. Features real-time URL analysis with VirusTotal API, password strength checking, quizzes, and a full admin dashboard.', tags: ['Flask', 'Python', 'VirusTotal API', 'SQLite'], link: 'https://github.com/phaneendrakumarbabu/phishing-awareness-defence-landing-page-', github: 'https://github.com/phaneendrakumarbabu/phishing-awareness-defence-landing-page-', img: 'proj_04.webp' },
+      { num: '05', name: 'Caesar Cipher Encryption Tool', desc: 'A Python program implementing the classical Caesar Cipher algorithm — shifts letters by a fixed number of positions to encrypt and decrypt messages with a clean CLI.', tags: ['Python', 'Cryptography', 'Caesar Cipher', 'Encryption'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_05.webp' },
+      { num: '06', name: 'Image Encryption Tool', desc: 'A GUI application for encrypting and decrypting images using pixel manipulation — XOR operations and pixel swapping — with an intuitive Tkinter interface.', tags: ['Python', 'OpenCV', 'Tkinter', 'Image Encryption'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_06.webp' },
+      { num: '07', name: 'Password Complexity Checker', desc: 'A Python tool that assesses password strength by evaluating length, character types, special characters, and numbers, with a real-time web interface for instant feedback.', tags: ['Python', 'JavaScript', 'Password Security', 'Web Interface'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_07.webp' },
+      { num: '08', name: 'Network Packet Analyzer', desc: 'A Python network analysis tool for capturing, analyzing, and inspecting packets — enabling traffic monitoring, protocol analysis, and threat detection in real-time.', tags: ['Python', 'Network Analysis', 'Packet Capture', 'Cybersecurity'], link: 'https://github.com/phaneendrakumarbabu?tab=repositories', github: 'https://github.com/phaneendrakumarbabu?tab=repositories', img: 'proj_08.webp' },
+      { num: '09', name: 'WanderWise AI', desc: 'An AI-powered travel planning platform that generates personalized itineraries, discovers hidden gems, and creates smart travel recommendations. Built with TypeScript and deployed on Vercel, it combines real-time data with Gemini AI to craft immersive, day-by-day travel plans tailored to your preferences, budget, and travel style.', tags: ['TypeScript', 'React', 'Google Gemini AI', 'Vercel', 'CSS'], link: 'https://wanderwise-ai-main.vercel.app', github: 'https://github.com/phaneendrakumarbabu/wanderwise-ai-main', img: 'proj_09.webp' },
+      { num: '10', name: 'AI Resume Analyser', desc: 'ResumeAI Pro — an AI-powered resume analyzer that helps job seekers match their skills to job requirements. Upload your PDF or paste your resume text, select a target role (Web Dev, Data Analyst, DevOps, Cloud Engineer, and more), and get an ATS score, skill match percentage, and personalized improvement suggestions powered by Google Gemini. Features an optional XGBoost ML service for enhanced scoring accuracy.', tags: ['React 18', 'TypeScript', 'Google Gemini AI', 'XGBoost', 'Vite', 'PDF.js', 'Firebase'], link: 'https://github.com/phaneendrakumarbabu/ai-resume-analyser', github: 'https://github.com/phaneendrakumarbabu/ai-resume-analyser', img: 'proj_10.webp' },
+      { num: '11', name: 'Learning Content Generator', desc: 'A modern full-stack learning platform designed to help developers and tech enthusiasts explore technology domains and discover career paths. Features an AI-powered Resource Summarizer, Project Idea Generator, Personalized Roadmap Creator, Tech News Bot, and Concept Explainer — all powered by Google Gemini AI via Firebase Genkit. Built with Next.js 15, Firebase Auth (Google OAuth + passwordless email), and Prisma ORM.', tags: ['Next.js 15', 'TypeScript', 'Google Gemini AI', 'Firebase', 'Prisma', 'Tailwind CSS', 'Radix UI'], link: 'https://github.com/phaneendrakumarbabu/learning-content-generator', github: 'https://github.com/phaneendrakumarbabu/learning-content-generator', img: 'proj_11.webp' },
     ];
 
     const projectsList = document.getElementById('projects-list');
@@ -2565,10 +2722,10 @@
 
     // ── MANIFESTO ──────────────────────────────────────────
     const manifesto = [
-      { num: '01', cat: 'Strategy', title: 'SECURITY-FIRST THINKING', desc: 'Every solution starts with threat modeling and security considerations — building resilient systems from the ground up.', img: 'manifesto_strategy.png' },
-      { num: '02', cat: 'Tech', title: 'SCALABLE ARCHITECTURE', desc: 'Clean, modular code designed to grow — separating concerns, optimizing for maintainability, and building with the future in mind.', img: 'manifesto_architecture.png' },
-      { num: '03', cat: 'UX & UI', title: 'FUNCTIONAL INTERFACES', desc: 'Interfaces that are purposeful, accessible, and elegant. Design that serves the user, not just the portfolio.', img: 'manifesto_ui.png' },
-      { num: '04', cat: 'Future', title: 'AI-DRIVEN SECURITY LOGIC', desc: 'Harnessing machine learning and AI to build smarter, adaptive security systems that evolve alongside emerging threats.', img: 'manifesto_ai.png' },
+      { num: '01', cat: 'Strategy', title: 'SECURITY-FIRST THINKING', desc: 'Every solution starts with threat modeling and security considerations — building resilient systems from the ground up.', img: 'manifesto_strategy.webp' },
+      { num: '02', cat: 'Tech', title: 'SCALABLE ARCHITECTURE', desc: 'Clean, modular code designed to grow — separating concerns, optimizing for maintainability, and building with the future in mind.', img: 'manifesto_architecture.webp' },
+      { num: '03', cat: 'UX & UI', title: 'FUNCTIONAL INTERFACES', desc: 'Interfaces that are purposeful, accessible, and elegant. Design that serves the user, not just the portfolio.', img: 'manifesto_ui.webp' },
+      { num: '04', cat: 'Future', title: 'AI-DRIVEN SECURITY LOGIC', desc: 'Harnessing machine learning and AI to build smarter, adaptive security systems that evolve alongside emerging threats.', img: 'manifesto_ai.webp' },
     ];
 
     const accordList = document.getElementById('accord-list');
@@ -2634,6 +2791,43 @@
 
     const skillsGrid = document.getElementById('skills-grid');
     if (skillsGrid) skillsObserver.observe(skillsGrid);
+
+    // ── ANIMATED STAT COUNTERS ────────────────────────────
+    (function () {
+      const statNums = document.querySelectorAll('.stat-num[data-target]');
+      let counted = false;
+
+      const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !counted) {
+            counted = true;
+            statNums.forEach(el => {
+              const target = parseInt(el.dataset.target);
+              const suffix = el.dataset.suffix || '';
+              const duration = 1800;
+              const startTime = performance.now();
+
+              function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(eased * target);
+                el.innerHTML = current + '<span>' + suffix + '</span>';
+                if (progress < 1) {
+                  requestAnimationFrame(updateCounter);
+                }
+              }
+              requestAnimationFrame(updateCounter);
+            });
+            statsObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      const statsRow = document.querySelector('.stats-row');
+      if (statsRow) statsObserver.observe(statsRow);
+    })();
     // ── ETHEREAL SHADOWS ANIMATION ─────────────────────────
     const hueNode = document.getElementById('ethereal-hue');
     if (hueNode) {
